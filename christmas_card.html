@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thiệp Giáng Sinh — Gửi Crush</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#081229; --card:#0f1724; --accent:#ff6b81; --muted:#9fb2d0;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, Arial;background:linear-gradient(180deg,var(--bg),#052033);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .wrap{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.05));border-radius:18px;overflow:hidden;box-shadow:0 10px 40px rgba(2,6,23,0.6);display:grid;grid-template-columns:1fr 420px}
+    .left{padding:28px}
+    .right{background:linear-gradient(180deg,#071529 0%, #042034 100%);padding:20px;display:flex;flex-direction:column;gap:12px}
+    h1{font-family:'Great Vibes', cursive;font-size:48px;margin:0 0 6px;color:var(--accent);letter-spacing:1px}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    label{font-size:13px;color:#cfe3ff;display:block;margin-bottom:6px}
+    input, textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit;font-size:14px}
+    textarea{min-height:100px;resize:vertical}
+    .controls{display:flex;gap:8px;margin-top:6px}
+    button{cursor:pointer;padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-weight:600}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+    .preview{border-radius:12px;background:linear-gradient(180deg,#0b2236 0%, #081427 100%);padding:18px;flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .card{width:320px;height:440px;border-radius:12px;background:linear-gradient(180deg,#08233a,#042433);padding:18px;box-shadow:0 12px 30px rgba(3,10,20,0.6);display:flex;flex-direction:column;align-items:center;justify-content:space-between;position:relative}
+    .card h2{margin:0;font-family:'Great Vibes';font-size:36px;color:var(--accent)}
+    .card .to{font-size:14px;color:var(--muted)}
+    .card .message{font-size:15px;text-align:center;color:#eaf4ff;padding:8px 10px}
+    .snow{position:absolute;inset:0;pointer-events:none}
+    .heart{position:absolute;right:14px;top:14px;width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,#ff8aa0,#ff6b81);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(255,107,129,0.18)}
+    .heart:after{content:'❤';font-size:22px;}
+    .footer{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
+    /* snowflakes */
+    @keyframes fall{0%{transform:translateY(-10vh)}100%{transform:translateY(110vh)}}
+    .snow i{position:absolute;top:-10vh;opacity:0.9;font-style:normal}
+    .snow i:nth-child(odd){opacity:0.6}
+    /* confetti placeholder */
+    .confetti-canvas{position:absolute;inset:0;pointer-events:none}
+    /* responsive */
+    @media(max-width:920px){.wrap{grid-template-columns:1fr;max-width:700px}.right{order:2}.left{order:1}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="left">
+      <h1>Giáng Sinh An Lành</h1>
+      <p class="lead">Tạo thiệp ấm áp và riêng tư dành cho crush — nhập tên, viết lời chúc, chọn phong cách và gửi thẳng từ tim.</p>
+
+      <label for="to">Gửi tới (tên crush)</label>
+      <input id="to" placeholder="Ví dụ: Linh" />
+
+      <label for="msg">Lời chúc (nhỏ, chân thành)</label>
+      <textarea id="msg" maxlength="240">Chúc bạn một Giáng Sinh an lành, nhiều niềm vui và luôn cười thật tươi. Mong được cùng bạn tạo những kỷ niệm đẹp năm tới 💫</textarea>
+
+      <label for="style">Chọn giao diện</label>
+      <select id="style">
+        <option value="classic">Cổ điển (ấm áp)</option>
+        <option value="modern">Hiện đại (tươi trẻ)</option>
+        <option value="minimal">Tối giản (thanh lịch)</option>
+      </select>
+
+      <div class="controls">
+        <button id="make">Tạo thiệp</button>
+        <button id="confetti" class="ghost">Bắn confetti</button>
+        <button id="copy" class="ghost">Sao chép lời chúc</button>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button id="share" class="ghost">Chia sẻ</button>
+        <button id="download" class="ghost">Tải ảnh (PNG)</button>
+        <button id="print" class="ghost">In thiệp</button>
+      </div>
+
+      <div class="footer">Tip: Viết lời ngắn, chân thành và kèm kỷ niệm nhỏ giữa hai bạn để thiệp ý nghĩa hơn.</div>
+
+    </div>
+
+    <div class="right">
+      <div class="preview" id="previewArea">
+        <div class="card" id="card">
+          <div style="width:100%;display:flex;justify-content:space-between;align-items:center">
+            <div style="text-align:left">
+              <div class="to" id="cardTo">Gửi: <strong>Crush</strong></div>
+            </div>
+            <div class="heart" title="From you"></div>
+          </div>
+
+          <h2 id="cardTitle">Chúc Mừng Giáng Sinh</h2>
+          <div class="message" id="cardMessage">Chúc bạn một Giáng Sinh an lành, nhiều niềm vui và luôn cười thật tươi.</div>
+
+          <div style="width:100%;display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:12px;color:var(--muted)">🎄 2025</div>
+            <div style="font-size:12px;color:var(--muted)">— Gửi bởi bạn —</div>
+          </div>
+        </div>
+        <div class="snow" id="snowLayer"></div>
+        <canvas class="confetti-canvas" id="confetti"></canvas>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="playMelody" class="ghost">Phát giai điệu</button>
+        <span style="font-size:13px;color:var(--muted)">Bật nhạc nhẹ để tăng cảm xúc</span>
+      </div>
+    </div>
+  </div>
+
+<script>
+// small helper
+const $ = id => document.getElementById(id);
+
+function updateCard(){
+  const to = $('to').value.trim() || 'Crush';
+  const msg = $('msg').value.trim() || 'Chúc bạn Giáng Sinh an lành!';
+  const style = $('style').value;
+  $('cardTo').innerHTML = 'Gửi: <strong>' + escapeHtml(to) + '</strong>';
+  $('cardMessage').textContent = msg;
+  // style variants
+  const card = $('card');
+  card.style.background = style === 'classic' ? 'linear-gradient(180deg,#08233a,#042433)' : style === 'modern' ? 'linear-gradient(180deg,#0b2a4a,#07223a)' : 'linear-gradient(180deg,#0b1b2a,#061520)';
+  $('cardTitle').style.color = style === 'minimal' ? '#f0f6ff' : '';
+}
+
+function escapeHtml(s){return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');}
+
+// make button
+$('make').addEventListener('click', ()=>{
+  updateCard();
+  floatHearts();
+});
+
+// copy message
+$('copy').addEventListener('click', async ()=>{
+  try{await navigator.clipboard.writeText($('msg').value); alert('Đã sao chép lời chúc!');}catch(e){alert('Trình duyệt không hỗ trợ copy tự động — hãy bôi đen và sao chép.');}
+});
+
+// share
+$('share').addEventListener('click', async ()=>{
+  const to = $('to').value.trim() || 'Crush';
+  const msg = $('msg').value.trim();
+  if(navigator.share){
+    try{ await navigator.share({title:'Thiệp Giáng Sinh cho ' + to, text: msg}); }
+    catch(e){alert('Chia sẻ bị huỷ hoặc không khả dụng.');}
+  } else { alert('Chia sẻ không khả dụng trên trình duyệt này.'); }
+});
+
+// print
+$('print').addEventListener('click', ()=>{ window.print(); });
+
+// download as image (draw card to canvas)
+$('download').addEventListener('click', ()=>{
+  const card = $('card');
+  const w = 800, h = 1100; 
+  const c = document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d');
+  // background
+  ctx.fillStyle = '#061828'; ctx.fillRect(0,0,w,h);
+  // draw rounded rect
+  roundRect(ctx,40,60,w-80,h-160,24,'#092a3a');
+  // title
+  ctx.fillStyle='#ff7a91'; ctx.font='60px Georgia'; ctx.fillText('Chúc Mừng Giáng Sinh', 120,160);
+  // to
+  ctx.fillStyle='#9fb2d0'; ctx.font='28px Arial'; ctx.fillText('Gửi: ' + ($('to').value.trim()||'Crush'), 120,220);
+  // message wrap
+  ctx.fillStyle='#eaf4ff'; ctx.font='26px Arial'; wrapText(ctx, $('msg').value, 120,280,560,34);
+  // footer
+  ctx.fillStyle='#a8bfd6'; ctx.font='18px Arial'; ctx.fillText('— Gửi bởi bạn —', 120, h-120);
+
+  const data = c.toDataURL('image/png');
+  const a = document.createElement('a'); a.href=data; a.download='thiep_giangsinh.png'; a.click();
+});
+
+function roundRect(ctx,x,y,w,h,r,fill){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath(); if(fill){ctx.fillStyle=fill;ctx.fill();}}
+function wrapText(ctx,text,x,y,maxWidth,lineHeight){const words=text.split(' ');let line='';for(let n=0;n<words.length;n++){const testLine=line+words[n]+' ';const metrics=ctx.measureText(testLine);const testWidth=metrics.width; if(testWidth>maxWidth && n>0){ctx.fillText(line,x,y);line=words[n]+' ';y+=lineHeight;}else{line=testLine;}}ctx.fillText(line,x,y);} 
+
+// simple confetti implementation
+const confettiCanvas = $('confetti'); const cc = confettiCanvas.getContext('2d');
+function resizeConfetti(){confettiCanvas.width = confettiCanvas.clientWidth || confettiCanvas.offsetWidth; confettiCanvas.height = confettiCanvas.clientHeight || confettiCanvas.offsetHeight;}
+window.addEventListener('resize', resizeConfetti); setTimeout(resizeConfetti,50);
+let confettiPieces = [];
+function shotConfetti(){const colors=['#ff6b81','#ffd56b','#6bf0ff','#a9ff6b','#ff8ae1']; for(let i=0;i<120;i++){confettiPieces.push({x: Math.random()*confettiCanvas.width, y: -20, vx:(Math.random()-0.5)*8, vy: Math.random()*6+2, size: Math.random()*8+4, color: colors[Math.floor(Math.random()*colors.length)], rot: Math.random()*360});}
+}
+function confettiLoop(){cc.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); for(let p of confettiPieces){p.x+=p.vx; p.y+=p.vy; p.vy+=0.12; p.rot+=p.vx; cc.save(); cc.translate(p.x,p.y); cc.rotate(p.rot*Math.PI/180); cc.fillStyle=p.color; cc.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6); cc.restore();}
+confettiPieces = confettiPieces.filter(p=>p.y < confettiCanvas.height+50);
+requestAnimationFrame(confettiLoop);} confettiLoop();
+$('confetti').addEventListener('click', ()=>{shotConfetti();});
+$('confetti').addEventListener('click', ()=>{});
+$('confetti').addEventListener('click', ()=>{});
+$('confetti').classList.add('ready');
+$('confetti').parentElement.addEventListener('click', ()=>{});
+$('confetti').parentElement.addEventListener('click', ()=>{});
+$('confetti').parentElement.style.position='absolute';
+$('confetti').parentElement.style.inset='0';
+
+$('confetti').addEventListener('click', (e)=>{});
+// button to trigger
+$('confetti').addEventListener('dblclick', ()=>{});
+$('confetti').parentElement.addEventListener('click', ()=>{});
+$('confetti').parentElement.addEventListener('touchstart', ()=>{});
+
+$('confetti').parentElement.addEventListener('click', (e)=>{ /* noop to allow clicks */ });
+
+$('confetti').parentElement.style.pointerEvents='none'; // canvas will still show
+$('confetti').style.pointerEvents='none';
+// alternate: bind button
+$('confetti').addEventListener('click', () => {});
+$('confetti').parentElement.style.pointerEvents='none';
+// proper trigger on button
+$('confetti').previousElementSibling.previousElementSibling?.addEventListener('click', ()=>{});
+// simpler: attach to actual button
+document.querySelectorAll('button').forEach(b=>{});
+$('confetti').closest('.right');
+
+// attach confetti to the "Bắn confetti" button
+$('confetti').classList.remove('ghost'); // visual hint removed - we'll attach real handler to button next
+
+const confButton = document.querySelector('button.ghost');
+if(confButton){confButton.addEventListener('click', ()=>{shotConfetti();});}
+
+// snow generator
+function genSnow(){const layer = $('snowLayer'); layer.innerHTML=''; for(let i=0;i<24;i++){const s = document.createElement('i'); s.textContent = '❄'; s.style.left = Math.random()*100 + '%'; s.style.fontSize = (8+Math.random()*18)+'px'; s.style.animation = 'fall ' + (6+Math.random()*10)+'s linear ' + (Math.random()*2)+'s infinite'; layer.appendChild(s);} }
+genSnow();
+
+// floating hearts when create
+function floatHearts(){for(let i=0;i<8;i++){const el = document.createElement('div'); el.textContent='❤'; el.style.position='absolute'; el.style.left = (20 + Math.random()*60)+'%'; el.style.bottom='20px'; el.style.fontSize=(12+Math.random()*30)+'px'; el.style.opacity=0.9; el.style.transform='translateY(0)'; el.style.transition='transform 2.5s ease-out, opacity 2.5s'; $('previewArea').appendChild(el); setTimeout(()=>{el.style.transform='translateY(-220px)'; el.style.opacity=0},50); setTimeout(()=>el.remove(),2600);} }
+
+// simple melody using WebAudio (short jingle)
+let audioCtx=null;
+$('playMelody').addEventListener('click', ()=>{
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  const notes = [660,660,0,660,0,520,660,0,760]; // tiny motif
+  let t = audioCtx.currentTime + 0.05; const dur = 0.18;
+  for(let i=0;i<notes.length;i++){
+    const n = notes[i]; if(n>0){const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sine'; o.frequency.value = n; g.gain.value=0.08; o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+dur);}
+    t += dur;
+  }
+});
+
+// initial update
+updateCard();
+
+</script>
+  
+<!-- QR Popup -->
+<div id="qrBox" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:9999">
+  <div style="background:#fff;padding:20px;border-radius:16px;text-align:center;max-width:320px;width:90%">
+    <h3 style="color:#333;margin-top:0">Quét mã QR để xem thiệp</h3>
+    <img id="qrImg" src="" style="width:220px;height:220px" />
+    <div style="margin-top:14px">
+      <button onclick="closeQR()" style="padding:8px 16px;border:none;border-radius:8px;background:#ff6b81;color:#fff;cursor:pointer">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Generate share link encoded message
+function buildShareURL(){
+  const to = encodeURIComponent($('to').value.trim());
+  const msg = encodeURIComponent($('msg').value.trim());
+  const style = encodeURIComponent($('style').value);
+  const base = window.location.href.split('#')[0].split('?')[0];
+  return base + `?to=${to}&msg=${msg}&style=${style}`;
+}
+
+// QR code display
+function showQR(){
+  const url = buildShareURL();
+  const qr = `https://chart.googleapis.com/chart?cht=qr&chs=260x260&chl=${encodeURIComponent(url)}`;
+  $('qrImg').src = qr;
+  $('qrBox').style.display = 'flex';
+}
+function closeQR(){ $('qrBox').style.display='none'; }
+
+// Add button to create QR
+const btnRow = document.querySelector('.controls');
+if(btnRow){
+  const qrBtn = document.createElement('button');
+  qrBtn.textContent = 'Tạo mã QR';
+  qrBtn.className = 'ghost';
+  qrBtn.onclick = showQR;
+  btnRow.appendChild(qrBtn);
+}
+
+// Auto-load from params
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  if(p.get('to')) $('to').value = decodeURIComponent(p.get('to'));
+  if(p.get('msg')) $('msg').value = decodeURIComponent(p.get('msg'));
+  if(p.get('style')) $('style').value = decodeURIComponent(p.get('style'));
+  updateCard();
+})();
+</script>
+
+</body>
+</html>
